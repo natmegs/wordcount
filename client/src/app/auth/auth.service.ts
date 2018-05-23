@@ -18,7 +18,6 @@ export class AuthService {
       public router: Router,
       public jwtHelper: JwtHelperService
     ) { 
-        console.log(AUTH_CONFIG.clientId)
         this.auth0 = new auth0.WebAuth({
             clientID: AUTH_CONFIG.clientId,
             domain: AUTH_CONFIG.domain,
@@ -27,7 +26,6 @@ export class AuthService {
             redirectUri: AUTH_CONFIG.callbackURL,
             scope: this.requestedScopes
         });
-        console.log(AUTH_CONFIG)
     }
 
   public login(): void {
