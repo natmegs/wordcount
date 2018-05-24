@@ -22,7 +22,7 @@ export class AuthService {
             clientID: AUTH_CONFIG.clientId,
             domain: AUTH_CONFIG.domain,
             responseType: 'token id_token',
-            audience: AUTH_CONFIG.audience,
+            audience: AUTH_CONFIG.apiIdentifier,
             redirectUri: AUTH_CONFIG.callbackURL,
             scope: this.requestedScopes
         });

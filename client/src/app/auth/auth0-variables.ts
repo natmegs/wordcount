@@ -6,6 +6,7 @@ interface AuthConfig {
     audience: string;
     callbackURL: string;
     apiUrl: string;
+    apiIdentifier: string;
 }
 
 export const AUTH_CONFIG: AuthConfig = {
@@ -13,5 +14,6 @@ export const AUTH_CONFIG: AuthConfig = {
     domain: environment.auth0_domain,
     audience: environment.auth0_audience,
     callbackURL: environment.callbackUrl,
-    apiUrl: environment.apiUrl
+    apiUrl: environment.apiUrl,
+    apiIdentifier: environment.auth0_api_identifier
 };
