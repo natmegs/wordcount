@@ -37,9 +37,10 @@ export class AuthService {
           if(authResult && authResult.accessToken && authResult.idToken) {
               window.location.hash = ''
               this.setSession(authResult)
+              this.getProfile();
               this.router.navigate(['/dashboard']);
           } else if (err) {
-              this.router.navigate(['/dashboard'])
+              this.router.navigate(['/register'])
               console.log(err)
               alert('Error' + err);
           }
@@ -89,7 +90,10 @@ export class AuthService {
   }
 
   public scheduleRenewal() {
+    console.log("Authenticated? ", this.isAuthenticated())
     if(!this.isAuthenticated()) return
+
+    if(!this.userProfile) this.getProfile();
 
     const expiresAt = JSON.parse(window.localStorage.getItem('expires_at'))
 
@@ -118,7 +122,7 @@ export class AuthService {
       this.refreshSubscription.unsubscribe()
   }
 
-  public getProfile(cb: (err: any, profile: any) => void): void {
+  public getProfile(cb?: (err: any, profile: any) => void): void {
       const accessToken = localStorage.getItem('access_token');
       if(!accessToken) {
           throw new Error('Access Token must exist')
@@ -128,8 +132,9 @@ export class AuthService {
       this.auth0.client.userInfo(accessToken, (err, profile) => {
           if(profile) {
               self.userProfile = profile
+              console.log("User profile: ", self.userProfile);
           }
-          cb(err, profile)
+          if(cb) cb(err, profile)
       })
   }
 }

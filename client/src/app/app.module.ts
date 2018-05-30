@@ -6,6 +6,7 @@ import { NgModule } from '@angular/core';
 import { JwtModule } from '@auth0/angular-jwt';
 
 import { AuthService } from './auth/auth.service';
+import { AuthGuard } from './auth/auth.guard';
 
 import { AppComponent } from './app.component';
 import { AuthComponent } from './auth/auth.component';
@@ -18,11 +19,16 @@ function tokenGetter() {
 }
 
 const routes: Routes = [
-  { path: 'dashboard', component: DashboardComponent },
   { path: 'auth', component: AuthComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { 
+    path: '', canActivateChild: [AuthGuard], children: [
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+      { path: 'dashboard', component: DashboardComponent },
+    ]
+  }
 ]
 
 @NgModule({
@@ -46,7 +52,8 @@ const routes: Routes = [
     })
   ],
   providers: [
-    AuthService
+    AuthService,
+    AuthGuard
   ],
   bootstrap: [AppComponent]
 })
