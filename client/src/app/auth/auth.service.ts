@@ -90,26 +90,31 @@ export class AuthService {
   }
 
   public scheduleRenewal() {
-    console.log("Authenticated? ", this.isAuthenticated())
+    console.log("SChedule renewal")
     if(!this.isAuthenticated()) return
 
     if(!this.userProfile) this.getProfile();
 
     const expiresAt = JSON.parse(window.localStorage.getItem('expires_at'))
+    console.log("Expires at: ", expiresAt);
 
     const expiresIn$ = of(expiresAt).pipe(
         mergeMap(expiresAt => {
             const now = Date.now();
-
+            console.log(new Date(expiresAt));
             // use delay in a timer to run refresh at proper time;
             // refresh 30 sec before expiry
             let refreshAt = expiresAt - (1000*30)
+            console.log("Refresh at: ", refreshAt);
+            console.log("Now: ", now);
+            console.log("Timer value: ", (refreshAt-now));
             return timer(Math.max(1, refreshAt - now))
         })
     )
 
     this.refreshSubscription = expiresIn$.subscribe(
         () => {
+            console.log("Expires in subscribe");
             this.renewToken();
             this.scheduleRenewal();
         }
@@ -123,18 +128,24 @@ export class AuthService {
   }
 
   public getProfile(cb?: (err: any, profile: any) => void): void {
-      const accessToken = localStorage.getItem('access_token');
-      if(!accessToken) {
-          throw new Error('Access Token must exist')
-      }
+    //   const accessToken = localStorage.getItem('access_token');
+    //   if(!accessToken) {
+    //       throw new Error('Access Token must exist')
+    //   }
 
-      const self = this
-      this.auth0.client.userInfo(accessToken, (err, profile) => {
-          if(profile) {
-              self.userProfile = profile
-              console.log("User profile: ", self.userProfile);
-          }
-          if(cb) cb(err, profile)
-      })
+    //   const self = this
+    //   this.auth0.client.userInfo(accessToken, (err, profile) => {
+    //       if(profile) {
+    //           self.userProfile = profile
+    //           console.log("User profile: ", self.userProfile);
+    //       }
+    //       if(cb) cb(err, profile)
+    //   })
+    const id_token = localStorage.getItem('id_token');
+    if(id_token) {
+        this.userProfile = this.jwtHelper.decodeToken(id_token);
+    } else {
+        console.log('No ID token');
+    }
   }
 }
